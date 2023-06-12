@@ -3,5 +3,10 @@
   import VanilaThree from "$lib/components/VanilaThree.svelte";
 </script>
 
-<NewCanvas/>
-<!-- <VanilaThree/> -->
+<!-- <NewCanvas/> -->
+
+<div class="relative">
+  <button class="absolute">Change Mode</button>
+  <VanilaThree/>
+
+</div>
