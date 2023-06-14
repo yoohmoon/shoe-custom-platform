@@ -1,0 +1,18 @@
+export const colorData = [
+  { name: "Black", value: "#000000" },
+  { name: "White", value: "#ffffff" },
+  { name: "Grey", value: "#9ca3af" },
+  { name: "Offwhite", value: "#efedde" },
+  { name: "Beige", value: "#eab308" },
+  { name: "Red", value: "#ef4444" },
+  { name: "Navy", value: "#1e3a8a" },
+  { name: "blue", value: "#2563eb" },
+  { name: "Skyblue", value: "#dbeafe" },
+  { name: "Green", value: "#14532d" },
+  { name: "Purple", value: "#9333ea" },
+  { name: "Pink", value: "#fce7f3" },
+  { name: "Orange", value: "#fb923c" },
+  { name: "Yellow", value: "#facc15" },
+  { name: "Neon-yellow", value: "#a3e635" },
+  { name: "Neon-blue", value: "#6ceff3" },
+];
