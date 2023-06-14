@@ -14,7 +14,20 @@ const toggleModal = () =>{
  showModal = !showModal;
 }
 
+const handleColorChange = (colorValue) => {
+  if(clickedMesh&&clickedMesh.material){
+    // clickedMesh.material.color.set(colorValue);
+    clickedMesh.material = new THREE.MeshStandardMaterial({color:colorValue});
+  } else {
+    alert("먼저 영역을 선택해주세요")
+  }
+}
 
+const handleMaterialChange = (material) =>{
+  if(clickedMesh&&clickedMesh.material){
+    clickedMesh.material.color.set(material)
+  }
+}
 
 
 // 전역 변수 생성
@@ -29,13 +42,13 @@ let scene = new THREE.Scene();
 scene.background = new THREE.Color('black')
 
 // lights
-let light = new THREE.AmbientLight(0xffff00, 0.5);
-let dLight = new THREE.DirectionalLight(0xffff00, 0.75);
-dLight.position.set(0,10,30);
-dLight.target.position.set(-50,30,0)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(1, 2, 3);
+const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+pointLight.position.set(3, 5, 2);
 
-// let hLight = new THREE.HemisphereLight(0xffff00, 0xffff00, 0.3)
-scene.add(light, dLight);
+scene.add(ambientLight, directionalLight, pointLight);
 
 
 
@@ -66,7 +79,6 @@ onMount(()=>{
     renderer.render(scene, camera)
   }
 
-  
 
   function animate(){
     requestAnimationFrame(animate);
@@ -99,14 +111,15 @@ function onMouseClick(event) {
     // Check if the userData object has a name property
     if (clickedMesh.userData && clickedMesh.userData.name) {
       console.log("Clicked Mesh userData Name: ", clickedMesh.userData.name);
+      console.log(renderer.domElement);
+      renderer.domElement.style.cursor = 'pointer';
+      // console.log("Clicked Mesh 정보! ", intersects[0].material);
+      
     } else {
       console.log("이름이 없는 속성입니다.");
     }
   }
 }
-
-
-
 
   
   // 3D 모델 불러오기
@@ -117,8 +130,9 @@ function onMouseClick(event) {
     scene.add(model)
     console.log(gltf);
     model.scale.set(4,4,4)
-    model.rotation.x = 0.5;
-    model.rotation.y = 0.5;
+    model.rotation.x = 0.6;
+    model.rotation.y = 0.6;
+    model.position.x = -1.2;
 
     // 3d 모델이 로드가 된 후에 실행
     animate();
@@ -150,7 +164,7 @@ function onMouseClick(event) {
       <ul class="grid grid-cols-4 gap-y-2 md:grid-cols-3  lg:grid-cols-4 ">
         {#each colorData as color}
         <li class="text-center">
-          <button class="w-12 h-12 rounded-full" style="background-color: {color.value};"></button>
+          <button class="w-12 h-12 rounded-full" style="background-color: {color.value};" on:click={()=>handleColorChange(color.value)}></button>
           <div class="text-sm">{color.name}</div>
         </li>
         {/each}
@@ -160,7 +174,7 @@ function onMouseClick(event) {
       <ul class="grid grid-cols-4 md:grid-cols-3  lg:grid-cols-4 ">
         {#each materialData as material}
         <li class="text-center">
-          <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({material.img});"></button>
+          <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({material.img});" on:click={handleMaterialChange()}></button>
           <div class="text-sm">{material.name}</div>
         </li>
         {/each}
