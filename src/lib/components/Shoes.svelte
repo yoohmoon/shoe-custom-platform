@@ -24,12 +24,6 @@ const handleColorChange = (colorValue) => {
   }
 }
 
-const handleMaterialChange = (material) =>{
-  if(clickedMesh&&clickedMesh.material){
-    clickedMesh.material.color.set(material)
-  }
-}
-
 const alertSelectMesh = () =>{
   alert("신발 내 영역을 선택해주세요.");
   return "신발 내 영역을 선택해주세요.";
@@ -65,6 +59,8 @@ let clickedMesh;
 let componentsList = [];
 let selectedComponent = null;
 
+let textureLoader;
+
 // scene 생성
 let scene = new THREE.Scene();
 scene.background = new THREE.Color('black')
@@ -78,6 +74,27 @@ pointLight.position.set(3, 5, 2);
 
 scene.add(ambientLight, directionalLight, pointLight);
 
+/* // texture
+// 여기에서 document undefined 오류가 발생한다.
+const textureLoader = new THREE.TextureLoader();
+const textureBaseColor = textureLoader.load('/images/leather1.jpg');
+const textureNormalMap = textureLoader.load('/images/leather1.jpg');
+const textureHeightMap = textureLoader.load('/images/leather1.jpg');
+const textureRoughnessMap = textureLoader.load('/images/leather1.jpg'); */
+
+
+
+const handleMaterialChange = (material) =>{
+  if(clickedMesh&&clickedMesh.material){
+    const materialTexture = textureLoader.load(material.img);
+    clickedMesh.material = new THREE.MeshStandardMaterial({
+      map:materialTexture
+    });
+
+  } else{
+    alert("먼저 영역을 선택해주세요")
+  }
+}
 
 
 onMount(()=>{
@@ -92,6 +109,13 @@ onMount(()=>{
   controls.enableDamping = true;
   controls.rotateSpeed = 0.8;
   controls.zoomSpeed = 1.2;
+
+  // 텍스쳐
+  textureLoader = new THREE.TextureLoader();
+const textureBaseColor = textureLoader.load('/images/leather1.jpg');
+const textureNormalMap = textureLoader.load('/images/leather1.jpg');
+const textureHeightMap = textureLoader.load('/images/leather1.jpg');
+const textureRoughnessMap = textureLoader.load('/images/leather1.jpg');
 
   // window resizing
   window.addEventListener('resize', onWindowResize, false);
@@ -211,7 +235,7 @@ function onMouseClick(event) {
     
     <OptionGrid title="Material" data="{materialData}">
       <div slot="item" let:item>
-        <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({item.img});" on:click={handleMaterialChange()}></button>
+        <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({item.img});" on:click={()=>handleMaterialChange(item)}></button>
         <div class="text-sm">{item.name}</div>
       </div>
     </OptionGrid>
