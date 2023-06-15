@@ -74,16 +74,6 @@ pointLight.position.set(3, 5, 2);
 
 scene.add(ambientLight, directionalLight, pointLight);
 
-/* // texture
-// 여기에서 document undefined 오류가 발생한다.
-const textureLoader = new THREE.TextureLoader();
-const textureBaseColor = textureLoader.load('/images/leather1.jpg');
-const textureNormalMap = textureLoader.load('/images/leather1.jpg');
-const textureHeightMap = textureLoader.load('/images/leather1.jpg');
-const textureRoughnessMap = textureLoader.load('/images/leather1.jpg'); */
-
-
-
 const handleMaterialChange = (material) =>{
   if(clickedMesh&&clickedMesh.material){
     const materialTexture = textureLoader.load(material.img);
