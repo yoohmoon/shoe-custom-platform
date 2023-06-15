@@ -5,8 +5,9 @@ import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {colorData} from '$lib/colorData.js'
 import {materialData} from '$lib/materialData.js'
-import Modal from "./Modal.svelte";
+import Modal from "$lib/components/Modal.svelte";
 import Button from "$lib/shared/Button.svelte";
+import OptionGrid from "$lib/shared/OptionGrid.svelte";
 
 let showModal = false;
 
@@ -29,6 +30,30 @@ const handleMaterialChange = (material) =>{
   }
 }
 
+const alertSelectMesh = () =>{
+  alert("신발 내 영역을 선택해주세요.");
+  return "신발 내 영역을 선택해주세요.";
+}
+
+let isMenuClicked = false;
+
+const toggleMenu = (e) =>{
+  isMenuClicked=!isMenuClicked;
+}
+
+
+const handleComponentClick = (componentName) => {
+  selectedComponent = componentName;
+
+  model.traverse((node)=>{
+    if(node.isMesh && node.userData.name === componentName){
+      clickedMesh = node;
+    }
+  });
+};
+
+
+
 
 // 전역 변수 생성
 let camera;
@@ -36,6 +61,9 @@ let model;
 
 let intersects;
 let clickedMesh;
+
+let componentsList = [];
+let selectedComponent = null;
 
 // scene 생성
 let scene = new THREE.Scene();
@@ -90,6 +118,7 @@ onMount(()=>{
 // 개별 매시 탐지
 renderer.domElement.addEventListener('click', onMouseClick, false);
 
+
 function onMouseClick(event) {
   // 마우스의 좌표 저장할 Vector2 객체 생성
   const mouse = new THREE.Vector2();
@@ -108,7 +137,7 @@ function onMouseClick(event) {
     // 카메라와 가장 가까운 교차 객체를 변수에 저장
     clickedMesh = intersects[0].object;
 
-    // Check if the userData object has a name property
+    // userData 객체에 name 속성이 있는지 여부 확인
     if (clickedMesh.userData && clickedMesh.userData.name) {
       console.log("Clicked Mesh userData Name: ", clickedMesh.userData.name);
       console.log(renderer.domElement);
@@ -117,6 +146,7 @@ function onMouseClick(event) {
       
     } else {
       console.log("이름이 없는 속성입니다.");
+      clickedMesh=null;
     }
   }
 }
@@ -134,6 +164,14 @@ function onMouseClick(event) {
     model.rotation.y = 0.6;
     model.position.x = -1.2;
 
+
+    // mesh name rendering 
+    model.traverse((node)=>{
+      if(node.isMesh && node.userData.name){
+        componentsList.push(node.userData.name);
+      }
+    })
+
     // 3d 모델이 로드가 된 후에 실행
     animate();
   })
@@ -148,48 +186,63 @@ function onMouseClick(event) {
 <canvas id="canvas" style="relative"></canvas>
 <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white bg-opacity-20 backdrop-blur text-white overflow-visible">
 
-  <!-- 영역 선택 안내 Nav -->
   <nav class="h-24 border-2 border-white font-bold text-lg text-center p-8">
-    <!-- <div>Menu</div> -->
-    {#if intersects}
-
-    <div class="align-middle">{clickedMesh.userData.name}</div>
+    {#if !isMenuClicked}
+      <img src="/icons/menu.svg" alt="menu icon" class="absolute w-5 h-5 cursor-pointer" on:click={toggleMenu}/>  
     {:else}
-    <div class="align-middle">영역을 선택해주세요</div>
+      <img src="/icons/cancel.svg" alt="menu close icon" class="absolute w-4 h-4 cursor-pointer" on:click={toggleMenu}/>
+    {/if}
+
+    {#if clickedMesh}
+      <div class="align-middle">{clickedMesh?.userData.name||alertSelectMesh()}</div>
+    {:else}
+      <div class="align-middle">영역을 선택해주세요</div>
     {/if}
   </nav>
 
+  {#if !isMenuClicked}
   <div class="flex-1 p-5 border-2 border-t-0 border-white overflow-auto">
-      <h3 class="pb-2 text-lg font-bold">Color</h3>
-      <ul class="grid grid-cols-4 gap-y-2 md:grid-cols-3  lg:grid-cols-4 ">
-        {#each colorData as color}
-        <li class="text-center">
-          <button class="w-12 h-12 rounded-full" style="background-color: {color.value};" on:click={()=>handleColorChange(color.value)}></button>
-          <div class="text-sm">{color.name}</div>
-        </li>
-        {/each}
-      </ul>
-
-      <h3 class="pt-5 pb-3 text-lg font-bold">Material</h3>
-      <ul class="grid grid-cols-4 md:grid-cols-3  lg:grid-cols-4 ">
-        {#each materialData as material}
-        <li class="text-center">
-          <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({material.img});" on:click={handleMaterialChange()}></button>
-          <div class="text-sm">{material.name}</div>
-        </li>
-        {/each}
-
+    <OptionGrid title="Color" data="{colorData}">
+      <div class="mb-3" slot="item" let:item>
+          <button class="w-12 h-12 rounded-full" style="background-color: {item.value};" on:click={() => handleColorChange(item.value)}></button>
+          <div class="text-sm">{item.name}</div>
+      </div>
+    </OptionGrid>
+    
+    <OptionGrid title="Material" data="{materialData}">
+      <div slot="item" let:item>
+        <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({item.img});" on:click={handleMaterialChange()}></button>
+        <div class="text-sm">{item.name}</div>
+      </div>
+    </OptionGrid>
   </div>
-  <div class="h-[200px] p-5 border-2 border-t-0 border-white">
-<div class="w-150 mx-auto mb-4 text-center">
-  <Button variant="inverse-sm">다시하기</Button>
-  <Button variant="inverse-sm">저장하기</Button>
+
+{:else}
+
+
+<div class="flex-1 p-5 border-2 border-t-0 border-white overflow-auto">
+  <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
+    <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleComponentClick(item)}} slot="item" let:item>{item}
+    </li>
+  </OptionGrid>
+
 </div>
-<Button variant="primary" on:click={toggleModal}>구매하기</Button>
+{/if}
 
+  <div class="h-[200px] p-5 border-2 border-t-0 border-white">
+    <div class="w-150 mx-auto mb-4 text-center">
+      <Button variant="inverse-sm">다시하기</Button>
+      <Button variant="inverse-sm">저장하기</Button>
+    </div>
+    <Button variant="primary" on:click={toggleModal}>구매하기</Button>
   </div>
-
 
 </div>
 </main>
 
+
+<style>
+  .menuIcon{
+    background-image: url(/icons/menu.svg);
+  }
+</style>
