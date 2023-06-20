@@ -49,6 +49,7 @@ const toggleMenu = () =>{
 }
 
 
+
 const handleComponentClick = (componentName) => {
   selectedComponent = componentName;
 
@@ -58,7 +59,6 @@ const handleComponentClick = (componentName) => {
     }
   });
 };
-
 
 
 
@@ -207,7 +207,7 @@ onMount(()=>{
 
   function animate(){
     requestAnimationFrame(animate);
-    controls.update()
+    controls.update();
     render();
   }
 
