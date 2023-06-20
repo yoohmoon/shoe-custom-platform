@@ -4,10 +4,12 @@ import * as THREE from "three";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {colorData} from '$lib/colorData.js'
-import {materialData} from '$lib/materialData.js'
 import Modal from "$lib/components/Modal.svelte";
 import Button from "$lib/shared/Button.svelte";
 import OptionGrid from "$lib/shared/OptionGrid.svelte";
+import {materialInfo} from '$lib/customData.js';
+import FaRegularHeart from '~icons/fa-regular/heart';
+import FaUndo from '~icons/fa-solid/undo';
 
 let showModal = false;
 
@@ -15,14 +17,23 @@ const toggleModal = () =>{
  showModal = !showModal;
 }
 
-const handleColorChange = (colorValue) => {
+const handleMeshExistence = () =>{
   if(clickedMesh&&clickedMesh.material){
-    // clickedMesh.material.color.set(colorValue);
-    clickedMesh.material.color.set(colorValue);
-    console.log("지금 선택한 메쉬의 material! ",clickedMesh.material)
-    // clickedMesh.material = new THREE.MeshStandardMaterial({color:colorValue});
+    return true;
   } else {
-    alert("먼저 영역을 선택해주세요")
+    alert("먼저 영역을 선택해주세요");
+    return false;
+  }
+}
+
+const handleColorChange = (colorValue) => {
+  if(handleMeshExistence()){
+    clickedMesh.material.color.set(colorValue.value);
+
+    let meshOptions = appliedOptions[clickedMesh.userData.name] || {};
+    // meshOptions.color = colorValue.name;
+    meshOptions= {...meshOptions, color: colorValue.name};
+    appliedOptions[clickedMesh.userData.name] = meshOptions;
   }
 }
 
@@ -33,7 +44,7 @@ const alertSelectMesh = () =>{
 
 let isMenuClicked = false;
 
-const toggleMenu = (e) =>{
+const toggleMenu = () =>{
   isMenuClicked=!isMenuClicked;
 }
 
@@ -63,6 +74,15 @@ let selectedComponent = null;
 
 let textureLoader;
 
+// save
+let appliedOptions ={};
+// 
+
+
+// 여기 수정
+let renderer;
+
+
 // scene 생성
 let scene = new THREE.Scene();
 scene.background = new THREE.Color('black')
@@ -71,64 +91,93 @@ scene.background = new THREE.Color('black')
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 2, 3);
-const pointLight = new THREE.PointLight(0xffffff, 1, 100);
-pointLight.position.set(3, 5, 2);
+const pointLight = new THREE.PointLight(0xffffff, 0.3, 100);
+pointLight.position.set(3, 5, 5);
 
-scene.add(ambientLight, directionalLight, pointLight);
+scene.add(ambientLight, directionalLight);
 
 
-// 코드 보존
+// textures
+const loadTexture = (url)=>{
+  const texture = textureLoader.load(url);
+  texture.magFilter = THREE.NearestFilter;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+
+  return texture;
+}
 
 const handleMaterialChange = (material) =>{
-  if(clickedMesh&&clickedMesh.material){
-    const materialTexture = textureLoader.load(material.img);
-    clickedMesh.material = new THREE.MeshStandardMaterial({
-      map:materialTexture
+  if(handleMeshExistence()){
+    const baseTexture = loadTexture(material.urls.base);
+    const RTexture = loadTexture(material.urls.rough);
+    const NTexture = loadTexture(material.urls.normal);
+    const DTexture = loadTexture(material.urls.displace);
+    const ATexture = loadTexture(material.urls.ao);
+
+    clickedMesh.material = new THREE.MeshPhysicalMaterial({
+      map:baseTexture,
+      normalMap: NTexture,
+      roughnessMap: RTexture,
+      displacementMap: DTexture,
+      displacementScale:0.0009,
+      roughness:0.3,
+      aoMap: ATexture,
     });
 
-  } else{
-    alert("먼저 영역을 선택해주세요")
+    let meshOptions = appliedOptions[clickedMesh.userData.name] || {};
+    // meshOptions.material = material.name;
+    meshOptions = {...meshOptions, material:material.name};
+    appliedOptions[clickedMesh.userData.name]=meshOptions;
   }
 }
 
+const handlePurchase = () =>{
+  console.log("저장하기 ", appliedOptions);
 
-/* 
-시도해 본 코드
+  let optionsString = "";
 
-const handleMaterialChange = async (material) => {
-  if (clickedMesh && clickedMesh.material) {
-    try {
-      // const baseTexture = textureLoader.load(material.img);
-      // const normalTexture = textureLoader.load(material.normalMap);
-      // const roughnessTexture = textureLoader.load(material.roughnessMap);
-      // const metalnessTexture = textureLoader.load(material.metalnessMap);
-
-      const baseTexture = textureLoader.load('/test/Leather_008_Base Color.jpg');
-      const normalTexture = textureLoader.load('/test/Leather_008_Normal.jpg');
-      // const textureHeightMap = textureLoader.load('/test/Leather_008_Height.png');
-      const textureRoughnessMap = textureLoader.load('/test/Leather_008_Roughness.jpg');
-
-      clickedMesh.material = new THREE.MeshStandardMaterial({
-        map: baseTexture,
-        normalMap: normalTexture,
-        roughnessMap: textureRoughnessMap,
-        // metalnessMap: metalnessTexture
-      });
-
-    } catch (error) {
-      console.error("Texture 변경에 실패했습니다:", error);
-    }
-  } else {
-    alert("먼저 영역을 선택해주세요");
+  for(let meshName in appliedOptions){
+    let options = appliedOptions[meshName];
+    optionsString += `${meshName}: Color - ${options.color}, Material - ${options.material}\n`;
   }
-};
+
+  return optionsString;
+}
+
+const handlePurchaseBtn = () => {
+  let purchaseOptions = handlePurchase();
+  console.log(purchaseOptions);
+  isSaveBtnClicked = false;
+  toggleModal();
+}
+
+const handleResetBtn = () =>{
+  location.reload()
+}
 
 
- */
+// screenshot function
+let screenshot = "";
+let  isSaveBtnClicked = false;
+
+const handleSaveBtn = () => {
+  renderer.render(scene, camera);
+  screenshot = renderer.domElement.toDataURL();
+  // document.getElementById('image').src = renderer.domElement.toDataURL();
+
+  isSaveBtnClicked = true;
+  toggleModal();
+}
+
 
 onMount(()=>{
-  let renderer = new THREE.WebGL1Renderer({canvas:document.querySelector("#canvas"), antialias:true})
+  renderer = new THREE.WebGL1Renderer({canvas:document.querySelector("#canvas"), antialias:true})
   renderer.setSize(window.innerWidth, window.innerHeight);
+
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1;
 
   // camera 설정
   camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000)
@@ -141,10 +190,6 @@ onMount(()=>{
 
   // 텍스쳐
   textureLoader = new THREE.TextureLoader();
-const textureBaseColor = textureLoader.load('/images/leather1.jpg');
-const textureNormalMap = textureLoader.load('/images/leather1.jpg');
-const textureHeightMap = textureLoader.load('/images/leather1.jpg');
-const textureRoughnessMap = textureLoader.load('/images/leather1.jpg');
 
   // window resizing
   window.addEventListener('resize', onWindowResize, false);
@@ -153,7 +198,6 @@ const textureRoughnessMap = textureLoader.load('/images/leather1.jpg');
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    render();
   }
 
   function render(){
@@ -192,10 +236,7 @@ function onMouseClick(event) {
 
     // userData 객체에 name 속성이 있는지 여부 확인
     if (clickedMesh.userData && clickedMesh.userData.name) {
-      console.log("Clicked Mesh userData Name: ", clickedMesh.userData.name);
-      console.log(renderer.domElement);
       renderer.domElement.style.cursor = 'pointer';
-      // console.log("Clicked Mesh 정보! ", intersects[0].material);
       
     } else {
       console.log("이름이 없는 속성입니다.");
@@ -225,29 +266,6 @@ function onMouseClick(event) {
       }
     })
 
-/* 
-const newTextureTrial = textureLoader.load('/images/leather1.jpg')
-    model.traverse(function(node){
-      if(node instanceof THREE.Mesh){
-        node.material.map = newTextureTrial;
-      }
-    });
-     */
-
-/* 
-// 삭제 예정
-
-model.traverse((node)=>{
-
-      if(node.isMesh){
-        console.log("Material", node.material);
-        console.log("Map (Texture): " ,node.material.map)
-      }
-
-    }) */
-
-
-
     // 3d 모델이 로드가 된 후에 실행
     animate();
   })
@@ -256,7 +274,33 @@ model.traverse((node)=>{
 
 </script>
 
-<Modal message="이대로 주문하시겠습니까?" {showModal} on:click={toggleModal}/>
+{#if isSaveBtnClicked}
+<Modal message="저장 성공!" subMessage="선택한 커스텀 옵션이 성공적으로 저장되었습니다." {showModal} on:click={toggleModal} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}> 
+  <div>
+    <img src="{screenshot}" alt="screenshot"/>
+  </div>
+</Modal>
+
+{:else}
+  
+<Modal message="이대로 주문하시겠습니까?" {showModal} on:click={toggleModal} {appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
+  <ul>
+    {#each Object.entries(appliedOptions) as [meshName, options] }
+      <li class="flex flex-col gap-5 mb-6">
+        <p class="font-bold">{meshName}</p>
+        <div class="flex justify-center items-center gap-3">
+          {#if options.color}
+          <button class="w-9 h-9 rounded-full" style="background-color: {options.color? options.color : ""};" ></button>
+          {:else} <div class="text-sm">색상 선택 안함  -</div>
+          {/if}
+          <div class="text-sm">{options.material?options.material:"재질 선택 안함"}</div>
+        </div>
+      </li>
+    {/each}
+  </ul>
+</Modal>
+{/if}
+
 
 <main>
 <canvas id="canvas" style="relative"></canvas>
@@ -280,14 +324,14 @@ model.traverse((node)=>{
   <div class="flex-1 p-5 border-2 border-t-0 border-white overflow-auto">
     <OptionGrid title="Color" data="{colorData}">
       <div class="mb-3" slot="item" let:item>
-          <button class="w-12 h-12 rounded-full" style="background-color: {item.value};" on:click={() => handleColorChange(item.value)}></button>
+          <button class="w-12 h-12 rounded-full" style="background-color: {item.value};" on:click={() => handleColorChange(item)}></button>
           <div class="text-sm">{item.name}</div>
       </div>
     </OptionGrid>
     
-    <OptionGrid title="Material" data="{materialData}">
-      <div slot="item" let:item>
-        <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({item.img});" on:click={()=>handleMaterialChange(item)}></button>
+    <OptionGrid title="Material" data="{materialInfo}">
+      <div class="mb-3" slot="item" let:item>
+        <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({item.urls.base});" on:click={()=>handleMaterialChange(item)}></button>
         <div class="text-sm">{item.name}</div>
       </div>
     </OptionGrid>
@@ -307,10 +351,28 @@ model.traverse((node)=>{
 
   <div class="h-[200px] p-5 border-2 border-t-0 border-white">
     <div class="w-150 mx-auto mb-4 text-center">
-      <Button variant="inverse-sm">다시하기</Button>
-      <Button variant="inverse-sm">저장하기</Button>
+      <Button variant="inverse-sm" >
+        <div class="flex justify-center items-center gap-2 text-sm">
+          <FaUndo class="w-4 h-4" />
+          <span>되돌리기</span>
+       </div>
+        </Button>
+        
+      <Button variant="inverse-sm" on:click={handleResetBtn}>
+        <div class="flex justify-center items-center gap-2 text-sm">
+          <FaUndo class="-scale-100 w-4 h-4" />
+          <span>다시하기</span>
+       </div>
+    </Button>
+  </div>
+  <Button variant="inverse-lg" on:click={handleSaveBtn}>
+    <div class="flex justify-center items-center gap-2">
+      <FaRegularHeart/>
+      <span>저장하기</span>
     </div>
-    <Button variant="primary" on:click={toggleModal}>구매하기</Button>
+</Button>
+
+    <Button variant="primary" on:click={handlePurchaseBtn}>구매하기</Button>
   </div>
 
 </div>
@@ -320,5 +382,8 @@ model.traverse((node)=>{
 <style>
   .menuIcon{
     background-image: url(/icons/menu.svg);
+  }
+  .heartIcon{
+    background-image: url(/icons/._heart.svg);
   }
 </style>
