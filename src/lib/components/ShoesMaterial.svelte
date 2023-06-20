@@ -349,14 +349,20 @@ function onMouseClick(event) {
 </div>
 {/if}
 
-  <div class="h-[200px] p-5 border-2 border-t-0 border-white">
+  <div class="flex flex-col items-center h-[150px] p-5  border-2 border-t-0 border-white">
     <div class="w-150 mx-auto mb-4 text-center">
-      <Button variant="inverse-sm" >
+      <!-- <Button variant="inverse-sm" >
         <div class="flex justify-center items-center gap-2 text-sm">
           <FaUndo class="w-4 h-4" />
           <span>되돌리기</span>
        </div>
-        </Button>
+      </Button> -->
+      <Button variant="inverse-sm" on:click={handleSaveBtn} >
+        <div class="flex justify-center items-center gap-2 text-sm">
+          <FaRegularHeart class="w-4 h-4" />
+          <span>저장하기</span>
+       </div>
+      </Button>
         
       <Button variant="inverse-sm" on:click={handleResetBtn}>
         <div class="flex justify-center items-center gap-2 text-sm">
@@ -365,12 +371,12 @@ function onMouseClick(event) {
        </div>
     </Button>
   </div>
-  <Button variant="inverse-lg" on:click={handleSaveBtn}>
+  <!-- <Button variant="inverse-lg" on:click={handleSaveBtn}>
     <div class="flex justify-center items-center gap-2">
       <FaRegularHeart/>
       <span>저장하기</span>
     </div>
-</Button>
+  </Button> -->
 
     <Button variant="primary" on:click={handlePurchaseBtn}>구매하기</Button>
   </div>
@@ -383,7 +389,5 @@ function onMouseClick(event) {
   .menuIcon{
     background-image: url(/icons/menu.svg);
   }
-  .heartIcon{
-    background-image: url(/icons/._heart.svg);
-  }
+
 </style>
