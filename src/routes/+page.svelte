@@ -52,12 +52,7 @@
   let componentsList = [];
   let selectedComponent = null;
   
-  let textureLoader;
-  
-  // save
-  // let appliedOptions ={};
-  // 
-  
+  // let textureLoader;
   
   // 여기 수정
   let renderer;
@@ -68,11 +63,22 @@
   scene.background = new THREE.Color('black')
   
   // lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   directionalLight.position.set(1, 2, 3);
-  const pointLight = new THREE.PointLight(0xffffff, 0.3, 100);
+  directionalLight.castShadow=true;
+  directionalLight.shadow.mapSize.width = 512;
+  directionalLight.shadow.mapSize.height = 512;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 500;
+
+  const pointLight = new THREE.PointLight(0xffffff, 0.1, 100);
   pointLight.position.set(3, 5, 5);
+  pointLight.castShadow=true;
+  pointLight.shadow.mapSize.width = 512;
+  pointLight.shadow.mapSize.height = 512;
+  pointLight.shadow.camera.near = 0.5;
+  pointLight.shadow.camera.far = 500;
   
   scene.add(ambientLight, directionalLight);
   
@@ -97,7 +103,7 @@
     toggleModal();
   }
   
-  const handleResetBtn = () =>{
+  const handleResetBtn = () =>{rotation
     location.reload()
   }
   
@@ -114,11 +120,24 @@
     isSaveBtnClicked = true;
     toggleModal();
   }
+
+
+
+  // shadow ground
+  const groundGeometry = new THREE.PlaneGeometry(200,200);
+  const groundMaterial = new THREE.MeshStandardMaterial({color:0x222222});
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -0.7;
+  ground.receiveShadow=true;
+  scene.add(ground);
   
   
   onMount(()=>{
     renderer = new THREE.WebGL1Renderer({canvas:document.querySelector("#canvas"), antialias:true})
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -126,7 +145,7 @@
   
     // camera 설정
     camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000)
-    camera.position.set(0,0,5);
+    camera.position.set(-3,4,4);
   
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -185,7 +204,11 @@
         console.log("이름이 없는 속성입니다.");
         $state.clickedMesh=null;
       }
-    }
+    } 
+    // else{
+    //    // 교차한 객체가 없는 경우 alertSelectMesh() 함수를 호출
+    //   alertSelectMesh()
+    // }
   }
   
     
@@ -195,15 +218,20 @@
     loader.load("/models/gltf/Loafers.glb", function(gltf){
       model = gltf.scene;
       scene.add(model)
-      console.log(gltf);
-      model.scale.set(4,4,4)
-      model.rotation.x = 0.6;
-      model.rotation.y = 0.6;
-      model.position.x = -1.2;
+      // console.log(gltf);
+      model.scale.set(7,7,7)
+      model.rotation.x = 0.45;
+      model.rotation.y = 0.3;
+      model.rotation.z = -0.15;
+      model.position.x = -1;
+      model.position.y = 0.4;
   
   
       // mesh name rendering 
       model.traverse((node)=>{
+        if(node.isMesh){
+          node.castShadow = true;
+        }
         if(node.isMesh && node.userData.name){
           componentsList.push(node.userData.name);
         }
@@ -257,7 +285,7 @@
       {/if}
   
       {#if $state.clickedMesh}
-        <div class="align-middle">{$state.clickedMesh?.userData.name||alertSelectMesh()}</div>
+        <div class="align-middle">{$state.clickedMesh?.userData.name}</div>
       {:else}
         <div class="align-middle">영역을 선택해주세요</div>
       {/if}

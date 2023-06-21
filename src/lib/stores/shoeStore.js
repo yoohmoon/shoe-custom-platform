@@ -49,7 +49,7 @@ export const createState = () => {
         roughnessMap: RTexture,
         displacementMap: DTexture,
         displacementScale: 0.0009,
-        roughness: 0.3,
+        roughness: 0.1,
         aoMap: ATexture,
       });
 
