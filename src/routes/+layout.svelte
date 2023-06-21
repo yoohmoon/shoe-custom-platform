@@ -1,6 +1,6 @@
 <script >
   import "../app.css";
-  // import "../tailwind.css";
+  import '@fontsource/playfair-display-sc';
 
 </script>
 

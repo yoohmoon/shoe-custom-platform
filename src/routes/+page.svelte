@@ -12,6 +12,7 @@
   import {materialInfo} from '$lib/customData.js';
   import FaRegularHeart from '~icons/fa-regular/heart';
   import FaUndo from '~icons/fa-solid/undo';
+  import Logo from "$lib/components/Logo.svelte";
 
   // stores
   const state = createState();
@@ -275,6 +276,7 @@
   
   <main>
   <canvas id="canvas" style="relative"></canvas>
+  <Logo/>
   <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white bg-opacity-20 backdrop-blur text-white overflow-visible">
   
     <nav class="h-24 border-2 border-white font-bold text-lg text-center p-8">
