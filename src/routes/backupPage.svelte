@@ -23,6 +23,27 @@
    showModal = !showModal;
   }
   
+/*   const handleMeshExistence = () =>{
+    if(clickedMesh&&clickedMesh.material){
+      return true;
+    } else {
+      alert("먼저 영역을 선택해주세요");
+      return false;
+    }
+  }
+   */
+
+ /*  const handleColorChange = (colorValue) => {
+    if(handleMeshExistence()){
+      state.clickedMesh.material.color.set(colorValue.value);
+  
+      let meshOptions = appliedOptions[state.clickedMesh.userData.name] || {};
+      // meshOptions.color = colorValue.name;
+      meshOptions= {...meshOptions, color: colorValue.name};
+      appliedOptions[state.clickedMesh.userData.name] = meshOptions;
+    }
+  } */
+  
   const alertSelectMesh = () =>{
     alert("신발 내 영역을 선택해주세요.");
     return "신발 내 영역을 선택해주세요.";
@@ -33,6 +54,7 @@
   const toggleMenu = () =>{
     isMenuClicked=!isMenuClicked;
   }
+  
   
   
   const handleComponentClick = (componentName) => {
@@ -81,7 +103,42 @@
   
   scene.add(ambientLight, directionalLight);
   
-
+  
+/*   // textures
+  const loadTexture = (url)=>{
+    const texture = textureLoader.load(url);
+    texture.magFilter = THREE.NearestFilter;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+  
+    return texture;
+  } */
+  
+  /* const handleMaterialChange = (material) =>{
+    if(handleMeshExistence()){
+      const baseTexture = loadTexture(material.urls.base);
+      const RTexture = loadTexture(material.urls.rough);
+      const NTexture = loadTexture(material.urls.normal);
+      const DTexture = loadTexture(material.urls.displace);
+      const ATexture = loadTexture(material.urls.ao);
+  
+      clickedMesh.material = new THREE.MeshPhysicalMaterial({
+        map:baseTexture,
+        normalMap: NTexture,
+        roughnessMap: RTexture,
+        displacementMap: DTexture,
+        displacementScale:0.0009,
+        roughness:0.3,
+        aoMap: ATexture,
+      });
+  
+      let meshOptions = appliedOptions[clickedMesh.userData.name] || {};
+      // meshOptions.material = material.name;
+      meshOptions = {...meshOptions, material:material.name};
+      appliedOptions[clickedMesh.userData.name]=meshOptions;
+    }
+  } */
+  
   const handlePurchase = () =>{
     // console.log("저장하기 ", appliedOptions);
   
@@ -138,6 +195,8 @@
     controls.rotateSpeed = 0.8;
     controls.zoomSpeed = 1.2;
   
+    // 텍스쳐
+    // textureLoader = new THREE.TextureLoader();
   
     // window resizing
     window.addEventListener('resize', onWindowResize, false);

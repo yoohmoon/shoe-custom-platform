@@ -97,7 +97,7 @@ pointLight.position.set(3, 5, 5);
 scene.add(ambientLight, directionalLight);
 
 
-// textures
+/* // textures
 const loadTexture = (url)=>{
   const texture = textureLoader.load(url);
   texture.magFilter = THREE.NearestFilter;
@@ -105,9 +105,9 @@ const loadTexture = (url)=>{
   texture.wrapT = THREE.RepeatWrapping;
 
   return texture;
-}
+} */
 
-const handleMaterialChange = (material) =>{
+/* const handleMaterialChange = (material) =>{
   if(handleMeshExistence()){
     const baseTexture = loadTexture(material.urls.base);
     const RTexture = loadTexture(material.urls.rough);
@@ -130,7 +130,7 @@ const handleMaterialChange = (material) =>{
     meshOptions = {...meshOptions, material:material.name};
     appliedOptions[clickedMesh.userData.name]=meshOptions;
   }
-}
+} */
 
 const handlePurchase = () =>{
   console.log("저장하기 ", appliedOptions);
