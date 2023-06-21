@@ -24,6 +24,7 @@
   "dependencies": {
     "@fontsource/playfair-display-sc": "^5.0.3",
     "svelte-cubed": "^0.2.1",
+    "tailwind-merge": "^1.13.2",
     "three": "^0.153.0"
   }
 }

@@ -14,6 +14,7 @@
   import FaRegularHeart from '~icons/fa-regular/heart';
   import FaUndo from '~icons/fa-solid/undo';
   import Logo from "$lib/components/Logo.svelte";
+  import ButtonMode from "$lib/components/ButtonMode.svelte";
 
   // stores
   const state = createState();
@@ -62,7 +63,20 @@
 
   // darkMode 수정
   let ground;
-  let isLightMode = true; //darkMode로 시작
+  // let isLightMode = true; //darkMode로 시작
+  // let isLightMode; //darkMode로 시작
+  let isLightMode;
+
+if (typeof window !== "undefined") {
+  isLightMode = localStorage.getItem('color-theme') === 'light'; // match the initial value with local storage
+}
+
+  const handleThemeChange = (event) =>{
+    const theme = event.detail;
+    isLightMode = theme === 'light';
+    scene.background = new THREE.Color(isLightMode? 'white' : 'black');
+    ground.material.color.set(isLightMode?'rgb(246, 246, 246)':0x222222);
+  }
   
   const handlePurchase = () =>{
     // console.log("저장하기 ", appliedOptions);
@@ -84,7 +98,7 @@
     toggleModal();
   }
   
-  const handleResetBtn = () =>{rotation
+  const handleResetBtn = () =>{
     location.reload()
   }
   
@@ -254,7 +268,8 @@
   
   <main>
   <canvas id="canvas" style="relative"></canvas>
-  <Logo/>
+  <Logo {isLightMode}/>
+  <ButtonMode on:themeChange={handleThemeChange} class="inline-block dark:hover:text-white hover:text-gray-900"/>
   <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white bg-opacity-20 backdrop-blur text-white overflow-visible">
   
     <nav class="h-24 border-2 border-white font-bold text-lg text-center p-8">
