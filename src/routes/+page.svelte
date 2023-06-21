@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
-  import {createState} from "$lib/stores/shoeStore"
+  import {createState} from "$lib/stores/shoeStore";
+  import {showModal, toggleModal} from "$lib/stores/modalStore";
   import * as THREE from "three";
   import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
   import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
@@ -16,12 +17,6 @@
   const state = createState();
 
   // $ : console.log("state ",state)
-  
-  let showModal = false;
-  
-  const toggleModal = () =>{
-   showModal = !showModal;
-  }
   
   const alertSelectMesh = () =>{
     alert("신발 내 영역을 선택해주세요.");
@@ -174,7 +169,7 @@
     raycaster.setFromCamera(mouse, camera);
   
     // 광선 상에 3d 모델과 교차한 객체 유무 확인 후, 결과를 배열에 저장
-   intersects = raycaster.intersectObject(model, true);
+    intersects = raycaster.intersectObject(model, true);
     console.log("model? ", model)
     
     // 교차한 객체가 있을 경우
@@ -223,7 +218,7 @@
   </script>
   
   {#if isSaveBtnClicked}
-  <Modal message="저장 성공!" subMessage="선택한 커스텀 옵션이 성공적으로 저장되었습니다." {showModal} on:click={toggleModal} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}> 
+  <Modal message="저장 성공!" subMessage="선택한 커스텀 옵션이 성공적으로 저장되었습니다." showModal={$showModal} on:click={toggleModal} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}> 
     <div>
       <img src="{screenshot}" alt="screenshot"/>
     </div>
@@ -231,7 +226,7 @@
   
   {:else}
     
-  <Modal message="이대로 주문하시겠습니까?" {showModal} on:click={toggleModal} appliedOptions={$state.appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
+  <Modal message="이대로 주문하시겠습니까?" showModal={$showModal} on:click={toggleModal} appliedOptions={$state.appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
     <ul>
       {#each Object.entries($state.appliedOptions) as [meshName, options] }
         <li class="flex flex-col gap-5 mb-6">

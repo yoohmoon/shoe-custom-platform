@@ -1,27 +1,3 @@
-/* 
-// 전역 변수 생성
-let camera;
-let model;
-
-let intersects;
-let clickedMesh;
-
-let componentsList = [];
-let selectedComponent = null;
-
-let textureLoader;
-
-// save
-let appliedOptions ={};
-// 
-
-
-// 여기 수정
-let renderer;
-
-
-*/
-
 import { writable, get } from "svelte/store";
 import * as THREE from "three";
 import { loadTexture } from "$lib/utility/threeFunctions";
