@@ -1,5 +1,18 @@
 import * as THREE from "three";
 
+/* 
+  // scene 생성
+  let scene = new THREE.Scene();
+  scene.background = new THREE.Color('black')
+*/
+
+// scene
+export const createScene = (color) => {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(color);
+  return scene;
+};
+
 // textures
 export const loadTexture = (url) => {
   const textureLoader = new THREE.TextureLoader();
@@ -9,4 +22,73 @@ export const loadTexture = (url) => {
   texture.wrapT = THREE.RepeatWrapping;
 
   return texture;
+};
+
+/* 
+  // lights
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(1, 2, 3);
+  directionalLight.castShadow=true;
+  directionalLight.shadow.mapSize.width = 512;
+  directionalLight.shadow.mapSize.height = 512;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 500;
+
+  const pointLight = new THREE.PointLight(0xffffff, 0.1, 100);
+  pointLight.position.set(3, 5, 5);
+  pointLight.castShadow=true;
+  pointLight.shadow.mapSize.width = 512;
+  pointLight.shadow.mapSize.height = 512;
+  pointLight.shadow.camera.near = 0.5;
+  pointLight.shadow.camera.far = 500;
+  
+  scene.add(ambientLight, directionalLight);
+  
+*/
+
+// lights
+export const createLights = (scene) => {
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+  directionalLight.position.set(1, 2, 3);
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.width = 512;
+  directionalLight.shadow.mapSize.height = 512;
+  directionalLight.shadow.camera.near = 0.5;
+  directionalLight.shadow.camera.far = 500;
+
+  const pointLight = new THREE.PointLight(0xffffff, 0.1, 100);
+  pointLight.position.set(3, 5, 5);
+  pointLight.castShadow = true;
+  pointLight.shadow.mapSize.width = 512;
+  pointLight.shadow.mapSize.height = 512;
+  pointLight.shadow.camera.near = 0.5;
+  pointLight.shadow.camera.far = 500;
+
+  scene.add(ambientLight, directionalLight);
+};
+
+/* 
+  // shadow ground
+  const groundGeometry = new THREE.PlaneGeometry(200,200);
+  const groundMaterial = new THREE.MeshStandardMaterial({color:0x222222});
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -0.7;
+  ground.receiveShadow=true;
+  scene.add(ground);
+*/
+
+// shadow ground
+export const createGround = (scene, color) => {
+  const groundGeometry = new THREE.PlaneGeometry(200, 200);
+  const groundMaterial = new THREE.MeshStandardMaterial({ color: color });
+  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -0.7;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  return ground;
 };

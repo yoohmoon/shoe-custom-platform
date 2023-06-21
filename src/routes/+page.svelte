@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import {createState} from "$lib/stores/shoeStore";
   import {showModal, toggleModal} from "$lib/stores/modalStore";
+  import {createScene, createLights, createGround} from "$lib/utility/threeFunctions"
   import * as THREE from "three";
   import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
   import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
@@ -53,37 +54,16 @@
   let componentsList = [];
   let selectedComponent = null;
   
-  // let textureLoader;
-  
   // 여기 수정
   let renderer;
-  
-  
-  // scene 생성
-  let scene = new THREE.Scene();
-  scene.background = new THREE.Color('black')
-  
-  // lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(1, 2, 3);
-  directionalLight.castShadow=true;
-  directionalLight.shadow.mapSize.width = 512;
-  directionalLight.shadow.mapSize.height = 512;
-  directionalLight.shadow.camera.near = 0.5;
-  directionalLight.shadow.camera.far = 500;
 
-  const pointLight = new THREE.PointLight(0xffffff, 0.1, 100);
-  pointLight.position.set(3, 5, 5);
-  pointLight.castShadow=true;
-  pointLight.shadow.mapSize.width = 512;
-  pointLight.shadow.mapSize.height = 512;
-  pointLight.shadow.camera.near = 0.5;
-  pointLight.shadow.camera.far = 500;
-  
-  scene.add(ambientLight, directionalLight);
-  
+  // 함수 모듈화 수정
+  let scene;
 
+  // darkMode 수정
+  let ground;
+  let isLightMode = true; //darkMode로 시작
+  
   const handlePurchase = () =>{
     // console.log("저장하기 ", appliedOptions);
   
@@ -122,19 +102,17 @@
     toggleModal();
   }
 
-
-
-  // shadow ground
-  const groundGeometry = new THREE.PlaneGeometry(200,200);
-  const groundMaterial = new THREE.MeshStandardMaterial({color:0x222222});
-  const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-  ground.rotation.x = -Math.PI/2;
-  ground.position.y = -0.7;
-  ground.receiveShadow=true;
-  scene.add(ground);
-  
-  
   onMount(()=>{
+    //scene
+    scene = createScene(isLightMode?'white':'black');
+
+    // lights
+    createLights(scene);
+
+    // shadow ground
+    ground = createGround(scene, isLightMode? "rgb(246, 246, 246)":0x222222);
+
+
     renderer = new THREE.WebGL1Renderer({canvas:document.querySelector("#canvas"), antialias:true})
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
@@ -255,7 +233,7 @@
   
   {:else}
     
-  <Modal message="이대로 주문하시겠습니까?" showModal={$showModal} on:click={toggleModal} appliedOptions={$state.appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
+  <Modal message="이대로 주문하시겠습니까?" subMessage="선택한 옵션을 확인해주세요." showModal={$showModal} on:click={toggleModal} appliedOptions={$state.appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
     <ul>
       {#each Object.entries($state.appliedOptions) as [meshName, options] }
         <li class="flex flex-col gap-5 mb-6">
