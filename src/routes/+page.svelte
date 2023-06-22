@@ -42,8 +42,7 @@
       }
     });
   };
-  
-  
+
   
   // 전역 변수 생성
   let camera;
@@ -61,7 +60,7 @@
   // 함수 모듈화 수정
   let scene;
 
-  // darkMode 수정
+  // darkMode
   let ground;
   // let isLightMode = true; //darkMode로 시작
   // let isLightMode; //darkMode로 시작
@@ -78,22 +77,20 @@ if (typeof window !== "undefined") {
     ground.material.color.set(isLightMode?'rgb(246, 246, 246)':0x222222);
   }
   
-  const handlePurchase = () =>{
-    // console.log("저장하기 ", appliedOptions);
+  // const handlePurchase = () =>{
+  //   let optionsString = "";
   
-    let optionsString = "";
+  //   for(let meshName in $state.appliedOptions){
+  //     let options = $state.appliedOptions[meshName];
+  //     optionsString += `${meshName}: Color - ${options.color}, Material - ${options.material}\n`;
+  //   }
   
-    for(let meshName in $state.appliedOptions){
-      let options = $state.appliedOptions[meshName];
-      optionsString += `${meshName}: Color - ${options.color}, Material - ${options.material}\n`;
-    }
-  
-    return optionsString;
-  }
+  //   return optionsString;
+  // }
   
   const handlePurchaseBtn = () => {
-    let purchaseOptions = handlePurchase();
-    console.log(purchaseOptions);
+    // let purchaseOptions = handlePurchase();
+    // console.log(purchaseOptions);
     isSaveBtnClicked = false;
     toggleModal();
   }
