@@ -62,8 +62,6 @@
 
   // darkMode
   let ground;
-  // let isLightMode = true; //darkMode로 시작
-  // let isLightMode; //darkMode로 시작
   let isLightMode;
 
 if (typeof window !== "undefined") {
@@ -76,21 +74,8 @@ if (typeof window !== "undefined") {
     scene.background = new THREE.Color(isLightMode? 'white' : 'black');
     ground.material.color.set(isLightMode?'rgb(246, 246, 246)':0x222222);
   }
-  
-  // const handlePurchase = () =>{
-  //   let optionsString = "";
-  
-  //   for(let meshName in $state.appliedOptions){
-  //     let options = $state.appliedOptions[meshName];
-  //     optionsString += `${meshName}: Color - ${options.color}, Material - ${options.material}\n`;
-  //   }
-  
-  //   return optionsString;
-  // }
-  
+
   const handlePurchaseBtn = () => {
-    // let purchaseOptions = handlePurchase();
-    // console.log(purchaseOptions);
     isSaveBtnClicked = false;
     toggleModal();
   }
@@ -251,7 +236,7 @@ if (typeof window !== "undefined") {
           <p class="font-bold text-black">{meshName}</p>
           <div class="flex justify-center items-center gap-3">
             {#if options.color}
-            <button class="w-9 h-9 rounded-full" style="background-color: {options.color? options.color : ""};" ></button>
+            <button class="w-9 h-9 rounded-full border-2" style="background-color: {options.color? options.color : ""};" ></button>
             {:else} <div class="text-sm">색상 선택 안함  -</div>
             {/if}
             <div class="text-sm">{options.material?options.material:"재질 선택 안함"}</div>
