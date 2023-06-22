@@ -251,7 +251,7 @@ if (typeof window !== "undefined") {
     <ul>
       {#each Object.entries($state.appliedOptions) as [meshName, options] }
         <li class="flex flex-col gap-5 mb-6">
-          <p class="font-bold">{meshName}</p>
+          <p class="font-bold text-black">{meshName}</p>
           <div class="flex justify-center items-center gap-3">
             {#if options.color}
             <button class="w-9 h-9 rounded-full" style="background-color: {options.color? options.color : ""};" ></button>
@@ -270,35 +270,38 @@ if (typeof window !== "undefined") {
   <canvas id="canvas" style="relative"></canvas>
   <Logo {isLightMode}/>
   <ButtonMode on:themeChange={handleThemeChange} class="inline-block dark:hover:text-white hover:text-gray-900"/>
-  <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white bg-opacity-20 backdrop-blur text-white overflow-visible">
-  
-    <nav class="h-24 border-2 border-white font-bold text-lg text-center p-8">
+  <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white {isLightMode?' text-[#2C2E31]': ' text-white bg-opacity-20 backdrop-blur'}    overflow-visible">
+    <nav class="h-24 p-8  font-bold text-lg text-center">
       {#if !isMenuClicked}
-        <img src="/icons/menu.svg" alt="menu icon" class="absolute w-5 h-5 cursor-pointer" on:click={toggleMenu}/>  
+        <svg class="absolute w-7 h-7 cursor-pointer {isLightMode?'fill-[#2C2E31]':'fill-white'}" on:click={toggleMenu} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M3 6h18v2h-18zm0 5h18v2h-18zm0 5h18v2h-18z"/>
+        </svg>
       {:else}
-        <img src="/icons/cancel.svg" alt="menu close icon" class="absolute w-4 h-4 cursor-pointer" on:click={toggleMenu}/>
+        <svg class="absolute w-7 h-7 cursor-pointer {isLightMode?'fill-[#2C2E31]':'fill-white'}" on:click={toggleMenu} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M6 18L18 6M6 6l12 12" stroke="{isLightMode?'#2C2E31':'white'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+        </svg>
       {/if}
   
       {#if $state.clickedMesh}
         <div class="align-middle">{$state.clickedMesh?.userData.name}</div>
       {:else}
-        <div class="align-middle">영역을 선택해주세요</div>
+        <div class="align-middle select-none">영역을 선택해주세요</div>
       {/if}
     </nav>
   
     {#if !isMenuClicked}
-    <div class="flex-1 p-5 border-2 border-t-0 border-white overflow-auto">
+    <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
       <OptionGrid title="Color" data="{colorData}">
         <div class="mb-3" slot="item" let:item>
-            <button class="w-12 h-12 rounded-full" style="background-color: {item.value};" on:click={() => state.handleColorChange(item)}></button>
-            <div class="text-sm">{item.name}</div>
+            <button class="w-12 h-12 rounded-full {isLightMode?'border-2 border-gray-400':''}" style="background-color: {item.value};" on:click={() => state.handleColorChange(item)}></button>
+            <div class="text-sm select-none">{item.name}</div>
         </div>
       </OptionGrid>
       
       <OptionGrid title="Material" data="{materialInfo}">
         <div class="mb-3" slot="item" let:item>
-          <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover" style="background-image: url({item.urls.base});" on:click={()=>state.handleMaterialChange(item)}></button>
-          <div class="text-sm">{item.name}</div>
+          <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover {isLightMode?'border-2 border-gray-400':''}" style="background-image: url({item.urls.base});" on:click={()=>state.handleMaterialChange(item)}></button>
+          <div class="text-sm select-none">{item.name}</div>
         </div>
       </OptionGrid>
     </div>
@@ -306,7 +309,7 @@ if (typeof window !== "undefined") {
   {:else}
   
   
-  <div class="flex-1 p-5 border-2 border-t-0 border-white overflow-auto">
+  <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
     <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
       <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleComponentClick(item)}} slot="item" let:item>{item}
       </li>
@@ -315,7 +318,7 @@ if (typeof window !== "undefined") {
   </div>
   {/if}
   
-    <div class="flex flex-col items-center h-[150px] p-5  border-2 border-t-0 border-white">
+    <div class="flex flex-col items-center h-[150px] p-5">
       <div class="w-150 mx-auto mb-4 text-center">
         <!-- <Button variant="inverse-sm" >
           <div class="flex justify-center items-center gap-2 text-sm">
@@ -323,14 +326,14 @@ if (typeof window !== "undefined") {
             <span>되돌리기</span>
          </div>
         </Button> -->
-        <Button variant="inverse-sm" on:click={handleSaveBtn} >
+        <Button variant="inverse-sm" on:click={handleSaveBtn} {isLightMode} >
           <div class="flex justify-center items-center gap-2 text-sm">
             <FaRegularHeart class="w-4 h-4" />
             <span>저장하기</span>
          </div>
         </Button>
           
-        <Button variant="inverse-sm" on:click={handleResetBtn}>
+        <Button variant="inverse-sm" on:click={handleResetBtn} {isLightMode}>
           <div class="flex justify-center items-center gap-2 text-sm">
             <FaUndo class="-scale-100 w-4 h-4" />
             <span>다시하기</span>
@@ -344,7 +347,7 @@ if (typeof window !== "undefined") {
       </div>
     </Button> -->
   
-      <Button variant="primary" on:click={handlePurchaseBtn}>구매하기</Button>
+      <Button variant="primary" on:click={handlePurchaseBtn} {isLightMode}>구매하기</Button>
     </div>
   
   </div>

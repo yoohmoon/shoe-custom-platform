@@ -18,7 +18,7 @@
 
 <div class="fixed flex items-center justify-center w-full h-full bg-black bg-opacity-80 z-10" class:payment={isPaying} on:click|self>
   <div class="modal flex flex-col gap-3 p-6 rounded-lg max-w-lg mx-auto my-80 text-center bg-white ">
-    <p class="font-bold">{message}</p>
+    <p class="font-bold text-black">{message}</p>
     <p class="mb-5">{subMessage}</p>
     <!-- {#if isSaveBtnClicked}
       <img height="120" width="120" id="image" src="{screenshot}" alt="screenshot"/>
