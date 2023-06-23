@@ -5,6 +5,7 @@ import { loadTexture } from "$lib/utility/threeFunctions";
 const initialState = {
   clickedMesh: null,
   appliedOptions: {},
+  selectedComponent: null,
 };
 
 export const createState = () => {
@@ -63,7 +64,23 @@ export const createState = () => {
     }
   };
 
+  const selectComponent = (componentName) => {
+    state.update((currentState) => {
+      currentState.selectedComponent = componentName;
+      return currentState;
+    });
+  };
+
+  const clickMesh = () => {
+    state.update((currentState) => {
+      currentState.clickedMesh = meshNode;
+      return currentState;
+    });
+  };
+
   return {
+    selectComponent,
+    clickMesh,
     handleColorChange,
     handleMaterialChange,
     set: state.set,

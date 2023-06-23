@@ -15,6 +15,9 @@
   import FaUndo from '~icons/fa-solid/undo';
   import Logo from "$lib/components/Logo.svelte";
   import ButtonMode from "$lib/components/ButtonMode.svelte";
+  import { handleComponentClick } from "../lib/utility/componentManager";
+
+
 
   // stores
   const state = createState();
@@ -32,17 +35,11 @@
     isMenuClicked=!isMenuClicked;
   }
   
-  
-  const handleComponentClick = (componentName) => {
-    selectedComponent = componentName;
-  
-    model.traverse((node)=>{
-      if(node.isMesh && node.userData.name === componentName){
-        $state.clickedMesh = node;
-      }
-    });
-  };
 
+ let handleClick = (item)=>{
+  handleComponentClick(item, model, camera, state);
+  selectedComponent = item;
+ }
   
   // 전역 변수 생성
   let camera;
@@ -92,7 +89,6 @@ if (typeof window !== "undefined") {
   const handleSaveBtn = () => {
     renderer.render(scene, camera);
     screenshot = renderer.domElement.toDataURL();
-    // document.getElementById('image').src = renderer.domElement.toDataURL();
   
     isSaveBtnClicked = true;
     toggleModal();
@@ -139,6 +135,7 @@ if (typeof window !== "undefined") {
   
     function render(){
       renderer.render(scene, camera)
+      // console.log("camera",camera)
     }
   
   
@@ -164,7 +161,7 @@ if (typeof window !== "undefined") {
   
     // 광선 상에 3d 모델과 교차한 객체 유무 확인 후, 결과를 배열에 저장
     intersects = raycaster.intersectObject(model, true);
-    console.log("model? ", model)
+    // console.log("model? ", model)
     
     // 교차한 객체가 있을 경우
     if (intersects.length > 0) {
@@ -207,7 +204,7 @@ if (typeof window !== "undefined") {
         if(node.isMesh){
           node.castShadow = true;
         }
-        if(node.isMesh && node.userData.name){
+        if(node.isMesh && node.userData.name && !node.userData.name.includes("Stitches")){
           componentsList.push(node.userData.name);
         }
       })
@@ -231,7 +228,7 @@ if (typeof window !== "undefined") {
     
   <Modal message="이대로 주문하시겠습니까?" subMessage="선택한 옵션을 확인해주세요." showModal={$showModal} on:click={toggleModal} appliedOptions={$state.appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
     <ul>
-      {#each Object.entries($state.appliedOptions) as [meshName, options] }
+      {#each Object.entries($state.appliedOptions || {}) as [meshName, options] }
         <li class="flex flex-col gap-5 mb-6">
           <p class="font-bold text-black">{meshName}</p>
           <div class="flex justify-center items-center gap-3">
@@ -291,13 +288,21 @@ if (typeof window !== "undefined") {
   {:else}
   
   
-  <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
+<!--   <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
     <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
       <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleComponentClick(item)}} slot="item" let:item>{item}
       </li>
     </OptionGrid>
-  
+  </div> -->
+
+
+  <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
+    <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
+      <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleClick(item)}} slot="item" let:item>{item}
+      </li>
+    </OptionGrid>
   </div>
+
   {/if}
   
     <div class="flex flex-col items-center h-[150px] p-5">
