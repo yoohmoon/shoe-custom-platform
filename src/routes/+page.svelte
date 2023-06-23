@@ -2,10 +2,8 @@
   import { onMount } from "svelte";
   import {createState} from "$lib/stores/shoeStore";
   import {showModal, toggleModal} from "$lib/stores/modalStore";
-  import {createScene, createLights, createGround} from "$lib/utility/threeFunctions"
+  import {createScene, createLights, createGround, createRenderer, createCamera, createControls, loadGLTFModel, resizeHandler, createRaycaster} from "$lib/utility/threeFunctions"
   import * as THREE from "three";
-  import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
-  import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
   import {colorData} from '$lib/colorData.js'
   import Modal from "$lib/components/Modal.svelte";
   import Button from "$lib/shared/Button.svelte";
@@ -16,7 +14,6 @@
   import Logo from "$lib/components/Logo.svelte";
   import ButtonMode from "$lib/components/ButtonMode.svelte";
   import { handleComponentClick } from "../lib/utility/componentManager";
-
 
 
   // stores
@@ -42,20 +39,13 @@
  }
   
   // 전역 변수 생성
-  let camera;
   let model;
-  
-  let intersects;
-  // let clickedMesh;
-  
+
   let componentsList = [];
   let selectedComponent = null;
-  
-  // 여기 수정
-  let renderer;
 
-  // 함수 모듈화 수정
-  let scene;
+  // threeFunctions modules
+  let scene, renderer, camera, controls, raycaster;
 
   // darkMode
   let ground;
@@ -104,35 +94,19 @@ if (typeof window !== "undefined") {
     // shadow ground
     ground = createGround(scene, isLightMode? "rgb(246, 246, 246)":0x222222);
 
+    //renderer
+    const canvasElement = document.querySelector("#canvas");
+    renderer=createRenderer(canvasElement);
 
-    renderer = new THREE.WebGL1Renderer({canvas:document.querySelector("#canvas"), antialias:true})
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
-  
-    // camera 설정
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 1000)
-    camera.position.set(-3,4,4);
-  
-    let controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.rotateSpeed = 0.8;
-    controls.zoomSpeed = 1.2;
-  
-  
+    //camera
+    camera = createCamera();
+
+    //controls
+    controls = createControls(camera, renderer.domElement);
+
     // window resizing
-    window.addEventListener('resize', onWindowResize, false);
-  
-    function onWindowResize(){
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-  
+    resizeHandler(camera, renderer);
+
     function render(){
       renderer.render(scene, camera)
       // console.log("camera",camera)
@@ -145,10 +119,11 @@ if (typeof window !== "undefined") {
       render();
     }
   
+    // raycaster
+    raycaster = createRaycaster();
   
   // 개별 매시 탐지
   renderer.domElement.addEventListener('click', onMouseClick, false);
-  
   
   function onMouseClick(event) {
     // 마우스의 좌표 저장할 Vector2 객체 생성
@@ -156,11 +131,10 @@ if (typeof window !== "undefined") {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   
-    const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
   
     // 광선 상에 3d 모델과 교차한 객체 유무 확인 후, 결과를 배열에 저장
-    intersects = raycaster.intersectObject(model, true);
+    const intersects = raycaster.intersectObject(model, true);
     // console.log("model? ", model)
     
     // 교차한 객체가 있을 경우
@@ -183,11 +157,8 @@ if (typeof window !== "undefined") {
     // }
   }
   
-    
     // 3D 모델 불러오기
-    let loader = new GLTFLoader();
-  
-    loader.load("/models/gltf/Loafers.glb", function(gltf){
+    loadGLTFModel("/models/gltf/Loafers.glb", function(gltf){
       model = gltf.scene;
       scene.add(model)
       // console.log(gltf);
@@ -211,8 +182,7 @@ if (typeof window !== "undefined") {
   
       // 3d 모델이 로드가 된 후에 실행
       animate();
-    })
-  
+    });
   })
   
   </script>
@@ -287,15 +257,6 @@ if (typeof window !== "undefined") {
   
   {:else}
   
-  
-<!--   <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
-    <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
-      <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleComponentClick(item)}} slot="item" let:item>{item}
-      </li>
-    </OptionGrid>
-  </div> -->
-
-
   <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
     <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
       <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleClick(item)}} slot="item" let:item>{item}
