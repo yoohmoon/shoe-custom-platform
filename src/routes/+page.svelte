@@ -33,6 +33,15 @@
   }
   
 
+/*  
+
+//코드 보존
+  let handleClick = (item)=>{
+  handleComponentClick(item, model, camera, state);
+  selectedComponent = item;
+ } */
+
+
  let handleClick = (item)=>{
   handleComponentClick(item, model, camera, state);
   selectedComponent = item;
