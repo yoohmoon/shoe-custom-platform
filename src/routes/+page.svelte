@@ -14,33 +14,20 @@
   import Logo from "$lib/components/Logo.svelte";
   import ButtonMode from "$lib/components/ButtonMode.svelte";
   import { handleComponentClick } from "../lib/utility/componentManager";
+  import { onMouseClick } from '$lib/utility/mouseEvents.js';
 
 
   // stores
   const state = createState();
 
   // $ : console.log("state ",state)
-  
-  const alertSelectMesh = () =>{
-    alert("신발 내 영역을 선택해주세요.");
-    return "신발 내 영역을 선택해주세요.";
-  }
-  
+
   let isMenuClicked = false;
   
   const toggleMenu = () =>{
     isMenuClicked=!isMenuClicked;
   }
   
-
-/*  
-
-//코드 보존
-  let handleClick = (item)=>{
-  handleComponentClick(item, model, camera, state);
-  selectedComponent = item;
- } */
-
 
  let handleClick = (item)=>{
   handleComponentClick(item, model, camera, state);
@@ -130,10 +117,16 @@ if (typeof window !== "undefined") {
   
     // raycaster
     raycaster = createRaycaster();
+
+  const handleMouseClick = (event) =>{
+    onMouseClick(event, raycaster, camera, model, $state);
+  }
   
   // 개별 매시 탐지
-  renderer.domElement.addEventListener('click', onMouseClick, false);
-  
+  // renderer.domElement.addEventListener('click', onMouseClick, false);
+  renderer.domElement.addEventListener('click', handleMouseClick, false);
+
+  /* 
   function onMouseClick(event) {
     // 마우스의 좌표 저장할 Vector2 객체 생성
     const mouse = new THREE.Vector2();
@@ -165,7 +158,9 @@ if (typeof window !== "undefined") {
     //   alertSelectMesh()
     // }
   }
-  
+   */
+
+
     // 3D 모델 불러오기
     loadGLTFModel("/models/gltf/Loafers.glb", function(gltf){
       model = gltf.scene;
@@ -277,12 +272,6 @@ if (typeof window !== "undefined") {
   
     <div class="flex flex-col items-center h-[150px] p-5">
       <div class="w-150 mx-auto mb-4 text-center">
-        <!-- <Button variant="inverse-sm" >
-          <div class="flex justify-center items-center gap-2 text-sm">
-            <FaUndo class="w-4 h-4" />
-            <span>되돌리기</span>
-         </div>
-        </Button> -->
         <Button variant="inverse-sm" on:click={handleSaveBtn} {isLightMode} >
           <div class="flex justify-center items-center gap-2 text-sm">
             <FaRegularHeart class="w-4 h-4" />
@@ -297,13 +286,6 @@ if (typeof window !== "undefined") {
          </div>
       </Button>
     </div>
-    <!-- <Button variant="inverse-lg" on:click={handleSaveBtn}>
-      <div class="flex justify-center items-center gap-2">
-        <FaRegularHeart/>
-        <span>저장하기</span>
-      </div>
-    </Button> -->
-  
       <Button variant="primary" on:click={handlePurchaseBtn} {isLightMode}>구매하기</Button>
     </div>
   
