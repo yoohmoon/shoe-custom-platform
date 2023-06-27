@@ -16,6 +16,7 @@
   import { handleComponentClick } from "../lib/utility/componentManager";
   import { onMouseClick } from '$lib/utility/mouseEvents.js';
 
+  import { appliedOptions } from "$lib/stores/store";
 
   // stores
   const state = createState();
@@ -64,7 +65,7 @@ if (typeof window !== "undefined") {
   }
   
   const handleResetBtn = () =>{
-    location.reload()
+    location.reload();
   }
   
   
@@ -123,10 +124,10 @@ if (typeof window !== "undefined") {
   }
   
   // 개별 매시 탐지
-  // renderer.domElement.addEventListener('click', onMouseClick, false);
-  renderer.domElement.addEventListener('click', handleMouseClick, false);
+  renderer.domElement.addEventListener('click', onMouseClick, false);
+  // renderer.domElement.addEventListener('click', handleMouseClick, false);
 
-  /* 
+ 
   function onMouseClick(event) {
     // 마우스의 좌표 저장할 Vector2 객체 생성
     const mouse = new THREE.Vector2();
@@ -158,7 +159,7 @@ if (typeof window !== "undefined") {
     //   alertSelectMesh()
     // }
   }
-   */
+
 
 
     // 3D 모델 불러오기
@@ -200,9 +201,9 @@ if (typeof window !== "undefined") {
   
   {:else}
     
-  <Modal message="이대로 주문하시겠습니까?" subMessage="선택한 옵션을 확인해주세요." showModal={$showModal} on:click={toggleModal} appliedOptions={$state.appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
+  <Modal message="이대로 주문하시겠습니까?" subMessage="선택한 옵션을 확인해주세요." showModal={$showModal} on:click={toggleModal} appliedOptions={$appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
     <ul>
-      {#each Object.entries($state.appliedOptions || {}) as [meshName, options] }
+      {#each Object.entries($appliedOptions || {}) as [meshName, options] }
         <li class="flex flex-col gap-5 mb-6">
           <p class="font-bold text-black">{meshName}</p>
           <div class="flex justify-center items-center gap-3">

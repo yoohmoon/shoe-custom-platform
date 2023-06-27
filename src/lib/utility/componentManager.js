@@ -1,15 +1,18 @@
 import { gsap } from "gsap";
 import { meshPositions } from "../meshPositions";
 import { get } from "svelte/store";
+import { appliedOptions } from "$lib/stores/store";
 
 const originalMaterials = new Map();
 
 export const handleComponentClick = (componentName, model, camera, state) => {
   const currentState = get(state);
-  const prevMesh = currentState.clickedMesh;
 
-  if (prevMesh && originalMaterials.has(prevMesh)) {
-    prevMesh.material = originalMaterials.get(prevMesh);
+  if (
+    currentState.clickedMesh &&
+    originalMaterials.has(currentState.clickedMesh.userData.name)
+  ) {
+    currentState.clickedMesh.material.emissive.set(0x000000);
   }
 
   state.update((currentState) => ({
@@ -21,25 +24,31 @@ export const handleComponentClick = (componentName, model, camera, state) => {
     if (node.isMesh && node.userData.name === componentName) {
       state.update((currentState) => ({ ...currentState, clickedMesh: node }));
 
-      originalMaterials.set(node, node.material);
-      const highlightMaterial = node.material.clone();
-      highlightMaterial.emissive.set(0xffff00);
-      highlightMaterial.transparent = true;
-      highlightMaterial.opacity = 0.7;
-      node.material = highlightMaterial;
+      if (!originalMaterials.has(node.userData.name)) {
+        originalMaterials.set(node.userData.name, node.material);
+      }
+
+      // Highlight node
+      node.material.emissive.set(0xffffff);
 
       setTimeout(() => {
-        if (originalMaterials.has(node)) {
-          node.material = originalMaterials.get(node);
+        node.material.emissive.set(0x000000);
+      }, 700);
+
+      appliedOptions.update((optionsMap) => {
+        if (optionsMap.has(node.userData.name)) {
+          const options = optionsMap.get(node.userData.name);
+          if (options.color) state.handleColorChange({ value: options.color });
+          if (options.material) state.handleMaterialChange(options.material);
         }
-      }, 2000);
+        return optionsMap;
+      });
     }
   });
 
   if (meshPositions[componentName]) {
     const componentPos = meshPositions[componentName].position;
     const componentRot = meshPositions[componentName].rotation;
-
     gsap.to(camera.position, {
       duration: 1,
       ...componentPos,

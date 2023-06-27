@@ -1,10 +1,10 @@
 import { writable, get } from "svelte/store";
 import * as THREE from "three";
 import { loadTexture } from "$lib/utility/threeFunctions";
+import { appliedOptions } from "$lib/stores/store";
 
 const initialState = {
   clickedMesh: null,
-  appliedOptions: {},
   selectedComponent: null,
 };
 
@@ -26,41 +26,54 @@ export const createState = () => {
       get(state).clickedMesh.material.color.set(colorValue.value);
 
       let meshOptions =
-        get(state).appliedOptions[get(state).clickedMesh.userData.name] || {};
-      // meshOptions.color = colorValue.name;
-      meshOptions = { ...meshOptions, color: colorValue.name };
-      get(state).appliedOptions[get(state).clickedMesh.userData.name] =
-        meshOptions;
+        get(appliedOptions)[get(state).clickedMesh.userData.name] || {};
+
+      meshOptions = { ...meshOptions, color: colorValue.value };
+      get(appliedOptions)[get(state).clickedMesh.userData.name] = meshOptions;
+
+      appliedOptions.update((optionsMap) => {
+        optionsMap.set(get(state).clickedMesh.userData.name, meshOptions);
+        return optionsMap;
+      });
     }
   };
 
   const handleMaterialChange = (material) => {
     if (handleMeshExistence()) {
-      const baseTexture = loadTexture(material.urls.base);
-      const RTexture = loadTexture(material.urls.rough);
-      const NTexture = loadTexture(material.urls.normal);
-      const DTexture = loadTexture(material.urls.displace);
-      const ATexture = loadTexture(material.urls.ao);
+      if (material && material.urls) {
+        const baseTexture = loadTexture(material.urls.base);
+        const RTexture = loadTexture(material.urls.rough);
+        const NTexture = loadTexture(material.urls.normal);
+        const DTexture = loadTexture(material.urls.displace);
+        const ATexture = loadTexture(material.urls.ao);
 
-      let currentColor = get(state).clickedMesh.material.color.clone();
+        let currentColor = get(state).clickedMesh.material.color.clone();
 
-      get(state).clickedMesh.material = new THREE.MeshPhysicalMaterial({
-        map: baseTexture,
-        normalMap: NTexture,
-        roughnessMap: RTexture,
-        displacementMap: DTexture,
-        displacementScale: 0.0009,
-        roughness: 0.1,
-        aoMap: ATexture,
-      });
+        get(state).clickedMesh.material = new THREE.MeshPhysicalMaterial({
+          map: baseTexture,
+          normalMap: NTexture,
+          roughnessMap: RTexture,
+          displacementMap: DTexture,
+          displacementScale: 0.0009,
+          roughness: 0.1,
+          aoMap: ATexture,
+        });
 
-      get(state).clickedMesh.material.color.set(currentColor);
+        get(state).clickedMesh.material.color.set(currentColor);
 
-      let meshOptions =
-        get(state).appliedOptions[get(state).clickedMesh.userData.name] || {};
-      meshOptions = { ...meshOptions, material: material.name };
-      get(state).appliedOptions[get(state).clickedMesh.userData.name] =
-        meshOptions;
+        let meshOptions =
+          get(appliedOptions)[get(state).clickedMesh.userData.name] || {};
+        meshOptions = { ...meshOptions, material: material.name };
+        get(appliedOptions)[get(state).clickedMesh.userData.name] = meshOptions;
+
+        // Save the applied material in appliedOptions map
+        appliedOptions.update((optionsMap) => {
+          optionsMap.set(get(state).clickedMesh.userData.name, meshOptions);
+          return optionsMap;
+        });
+      } else {
+        console.error("The material object or its urls property is undefined");
+      }
     }
   };
 
