@@ -7,7 +7,6 @@
   import {colorData} from '$lib/colorData.js'
   import Modal from "$lib/components/Modal.svelte";
   import Button from "$lib/shared/Button.svelte";
-  import OptionGrid from "$lib/shared/OptionGrid.svelte";
   import {materialInfo} from '$lib/customData.js';
   import FaRegularHeart from '~icons/fa-regular/heart';
   import FaUndo from '~icons/fa-solid/undo';
@@ -19,6 +18,7 @@
   import { appliedOptions } from "$lib/stores/store";
   import ColorOption from "$lib/components/ColorOption.svelte";
   import MaterialOption from "$lib/components/MaterialOption.svelte";
+  import ComponentOption from "$lib/components/ComponentOption.svelte";
 
   // stores
   const state = createState();
@@ -29,10 +29,10 @@
     isMenuClicked=!isMenuClicked;
   }
   
-
- let handleClick = (item)=>{
-  handleComponentClick(item, model, camera, state);
-  selectedComponent = item;
+ let handleClick = (e)=>{
+  // console.log("comp clicked! ",e.detail.item)
+  handleComponentClick(e.detail.item, model, camera, state);
+  selectedComponent = e.detail.item;
  }
   
   // 전역 변수 생성
@@ -250,24 +250,16 @@ if (typeof window !== "undefined") {
         <div class="align-middle select-none">영역을 선택해주세요</div>
       {/if}
     </nav>
-  
-    {#if !isMenuClicked}
-    <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
-      <ColorOption {isLightMode} {colorData} {selectedColorItem} on:colorChanged={changeColor}/>
-      <MaterialOption {isLightMode} {materialInfo} {state}/>
-    </div>
-  
-  {:else}
-  
+
   <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
-    <OptionGrid title="Components" data={componentsList} gridClass="grid-cols-2 gap-y-4 md:grid-cols-1  lg:grid-cols-2">
-      <li class="text-center text-lg cursor-pointer hover:font-semibold transition-all duration-150 ease-in-out {selectedComponent===item&&"font-extrabold"}" on:click={()=>{handleClick(item)}} slot="item" let:item>{item}
-      </li>
-    </OptionGrid>
+    {#if !isMenuClicked}
+    <ColorOption {isLightMode} {colorData} {selectedColorItem} on:colorChanged={changeColor}/>
+    <MaterialOption {isLightMode} {materialInfo} {state}/>
+    {:else}
+    <ComponentOption {selectedComponent} {componentsList} on:componentClicked={handleClick}/>
+    {/if}
   </div>
 
-  {/if}
-  
     <div class="flex flex-col items-center h-[150px] p-5">
       <div class="w-150 mx-auto mb-4 text-center">
         <Button variant="inverse-sm" on:click={handleSaveBtn} {isLightMode} >

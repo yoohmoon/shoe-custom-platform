@@ -8,7 +8,6 @@
 
   const dispatch = createEventDispatcher();
   const changeColor = (item) => {
-    console.log("itme?? ",item)
     dispatch("colorChanged", {item})
   }
 </script>
