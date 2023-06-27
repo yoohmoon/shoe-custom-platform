@@ -1,7 +1,7 @@
 <script>
 export let title;
 export let data;
-export let gridClass = "grid-cols-4 gap-y-2 md:grid-cols-3  lg:grid-cols-4";
+export let gridClass = "grid-cols-4 gap-y-1 md:grid-cols-3  lg:grid-cols-4";
 
 </script>
 

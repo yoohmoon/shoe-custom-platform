@@ -17,11 +17,11 @@
   import { onMouseClick } from '$lib/utility/mouseEvents.js';
 
   import { appliedOptions } from "$lib/stores/store";
+  import ColorOption from "$lib/components/ColorOption.svelte";
+  import MaterialOption from "$lib/components/MaterialOption.svelte";
 
   // stores
   const state = createState();
-
-  // $ : console.log("state ",state)
 
   let isMenuClicked = false;
   
@@ -49,7 +49,7 @@
   let isLightMode;
 
 if (typeof window !== "undefined") {
-  isLightMode = localStorage.getItem('color-theme') === 'light'; // match the initial value with local storage
+  isLightMode = localStorage.getItem('color-theme') === 'light'; 
 }
 
   const handleThemeChange = (event) =>{
@@ -106,7 +106,6 @@ if (typeof window !== "undefined") {
 
     function render(){
       renderer.render(scene, camera)
-      // console.log("camera",camera)
     }
   
   
@@ -189,6 +188,15 @@ if (typeof window !== "undefined") {
       animate();
     });
   })
+
+  let selectedColorItem = null;
+
+  const changeColor = (item) =>{
+    state.handleColorChange(item);
+    selectedColorItem = item;
+
+    setTimeout(()=>{selectedColorItem=null;},1700)
+  }
   
   </script>
   
@@ -245,19 +253,8 @@ if (typeof window !== "undefined") {
   
     {#if !isMenuClicked}
     <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
-      <OptionGrid title="Color" data="{colorData}">
-        <div class="mb-3" slot="item" let:item>
-            <button class="w-12 h-12 rounded-full {isLightMode?'border-2 border-gray-400':''}" style="background-color: {item.value};" on:click={() => state.handleColorChange(item)}></button>
-            <div class="text-sm select-none">{item.name}</div>
-        </div>
-      </OptionGrid>
-      
-      <OptionGrid title="Material" data="{materialInfo}">
-        <div class="mb-3" slot="item" let:item>
-          <button class="w-12 h-12 rounded-full bg-no-repeat bg-cover {isLightMode?'border-2 border-gray-400':''}" style="background-image: url({item.urls.base});" on:click={()=>state.handleMaterialChange(item)}></button>
-          <div class="text-sm select-none">{item.name}</div>
-        </div>
-      </OptionGrid>
+      <ColorOption {isLightMode} {colorData} {selectedColorItem} {changeColor}/>
+      <MaterialOption {isLightMode} {materialInfo} {state}/>
     </div>
   
   {:else}
