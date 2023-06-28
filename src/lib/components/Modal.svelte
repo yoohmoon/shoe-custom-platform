@@ -6,12 +6,6 @@
   export let showModal = false;
   export let isPaying = false;
 
-  export let appliedOptions;
-
-  export let screenshot;
-  export let isSaveBtnClicked;
-
-
 </script>
 
 {#if showModal}
@@ -20,9 +14,6 @@
   <div class="modal flex flex-col gap-3 p-6 rounded-lg max-w-lg mx-auto my-80 text-center bg-white ">
     <p class="font-bold text-black">{message}</p>
     <p class="mb-5">{subMessage}</p>
-    <!-- {#if isSaveBtnClicked}
-      <img height="120" width="120" id="image" src="{screenshot}" alt="screenshot"/>
-    {/if} -->
     <slot></slot>
     <Button variant="inverse">주문하기</Button>
   </div>

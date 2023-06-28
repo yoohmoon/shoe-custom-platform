@@ -5,7 +5,6 @@
   import {createScene, createLights, createGround, createRenderer, createCamera, createControls, loadGLTFModel, resizeHandler, createRaycaster} from "$lib/utility/threeFunctions"
   import * as THREE from "three";
   import {colorData} from '$lib/colorData.js'
-  import Modal from "$lib/components/Modal.svelte";
   import Button from "$lib/shared/Button.svelte";
   import {materialInfo} from '$lib/customData.js';
   import Logo from "$lib/components/Logo.svelte";
@@ -18,7 +17,9 @@
   import MaterialOption from "$lib/components/MaterialOption.svelte";
   import ComponentOption from "$lib/components/ComponentOption.svelte";
   import IconButton from "$lib/shared/IconButton.svelte";
-  import SvgIcon from "../lib/components/SvgIcon.svelte";
+  import SvgIcon from "$lib/components/SvgIcon.svelte";
+  import SaveModal from "$lib/components/SaveModal.svelte";
+  import OrderModal from "$lib/components/OrderModal.svelte";
 
   // stores
   const state = createState();
@@ -29,11 +30,10 @@
     isMenuClicked = e.detail.isMenuClicked
   }
   
- let handleClick = (e)=>{
-  // console.log("comp clicked! ",e.detail.item)
-  handleComponentClick(e.detail.item, model, camera, state);
-  selectedComponent = e.detail.item;
- }
+  let handleClick = (e)=>{
+    handleComponentClick(e.detail.item, model, camera, state);
+    selectedComponent = e.detail.item;
+  }
   
   // 전역 변수 생성
   let model;
@@ -67,7 +67,6 @@ if (typeof window !== "undefined") {
   const handleResetBtn = () =>{
     location.reload();
   }
-  
   
   // screenshot function
   let screenshot = "";
@@ -174,32 +173,10 @@ if (typeof window !== "undefined") {
   </script>
   
   {#if isSaveBtnClicked}
-  <Modal message="저장 성공!" subMessage="선택한 커스텀 옵션이 성공적으로 저장되었습니다." showModal={$showModal} on:click={toggleModal} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}> 
-    <div>
-      <img src="{screenshot}" alt="screenshot"/>
-    </div>
-  </Modal>
-  
+    <SaveModal {showModal} {toggleModal} {screenshot}/>
   {:else}
-    
-  <Modal message="이대로 주문하시겠습니까?" subMessage="선택한 옵션을 확인해주세요." showModal={$showModal} on:click={toggleModal} appliedOptions={$appliedOptions} screenshot={screenshot} isSaveBtnClicked={isSaveBtnClicked}>
-    <ul>
-      {#each Object.entries($appliedOptions || {}) as [meshName, options] }
-        <li class="flex flex-col gap-5 mb-6">
-          <p class="font-bold text-black">{meshName}</p>
-          <div class="flex justify-center items-center gap-3">
-            {#if options.color}
-            <button class="w-9 h-9 rounded-full border-2" style="background-color: {options.color? options.color : ""};" ></button>
-            {:else} <div class="text-sm">색상 선택 안함  -</div>
-            {/if}
-            <div class="text-sm">{options.material?options.material:"재질 선택 안함"}</div>
-          </div>
-        </li>
-      {/each}
-    </ul>
-  </Modal>
+    <OrderModal {showModal} {toggleModal} {appliedOptions}/>
   {/if}
-  
   
   <main>
     <canvas id="canvas" style="relative"></canvas>
