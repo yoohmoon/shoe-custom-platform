@@ -162,9 +162,9 @@ if (typeof window !== "undefined") {
 
   let selectedColorItem = null;
 
-  const changeColor = (e) =>{
-    state.handleColorChange(e.detail.item);
-    selectedColorItem = e.detail.item;
+  const changeColor = (item) =>{
+    state.handleColorChange(item);
+    selectedColorItem = item;
 
     setTimeout(()=>{selectedColorItem=null;},1700)
   }
@@ -193,8 +193,7 @@ if (typeof window !== "undefined") {
       </nav>
 
     <div class="flex-1 p-5 border border-x-0 overflow-auto {isLightMode?' border-y-[#2C2E31]':'border-white'}">
-      {#if !isMenuClicked}
-      <ColorOption {isLightMode} {colorData} {selectedColorItem} on:colorChanged={changeColor}/>
+      <ColorOption {isLightMode} {colorData} {selectedColorItem} {changeColor}/>
       <MaterialOption {isLightMode} {materialInfo} {state}/>
       {:else}
       <ComponentOption {selectedComponent} {componentsList} on:componentClicked={handleClick}/>

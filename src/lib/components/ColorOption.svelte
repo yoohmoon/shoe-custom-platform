@@ -17,7 +17,7 @@
         <button 
         class={`w-12 h-12 rounded-full ${isLightMode?'border-2 border-gray-400':''} ${item === selectedColorItem ? 'ring-4 ring-gray-400 ring-opacity-50' : ''}`} 
         style="background-color: {item.value};"
-        on:click={()=> changeColor(item)}></button>
+      on:click={()=> changeColor(item)}></button>
         {#if item === selectedColorItem}
           <div class="text-sm select-none">{item.name}</div>
         {/if}
