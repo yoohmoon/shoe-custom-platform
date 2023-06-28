@@ -40,7 +40,15 @@ export const createState = () => {
 
   const handleMaterialChange = (material) => {
     if (handleMeshExistence()) {
-      if (material && material.urls) {
+      if (
+        material &&
+        material.urls &&
+        material.urls.base &&
+        material.urls.rough &&
+        material.urls.normal &&
+        material.urls.displace &&
+        material.urls.ao
+      ) {
         const baseTexture = loadTexture(material.urls.base);
         const RTexture = loadTexture(material.urls.rough);
         const NTexture = loadTexture(material.urls.normal);
