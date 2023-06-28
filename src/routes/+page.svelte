@@ -1,25 +1,24 @@
 <script>
   import { onMount } from "svelte";
+  import * as THREE from "three";
   import {createState} from "$lib/stores/shoeStore";
   import {showModal, toggleModal} from "$lib/stores/modalStore";
-  import {createScene, createLights, createGround, createRenderer, createCamera, createControls, loadGLTFModel, resizeHandler, createRaycaster} from "$lib/utility/threeFunctions"
-  import * as THREE from "three";
-  import {colorData} from '$lib/colorData.js'
+  import { appliedOptions } from "$lib/stores/store";
   import Button from "$lib/shared/Button.svelte";
-  import {materialInfo} from '$lib/customData.js';
+  import IconButton from "$lib/shared/IconButton.svelte";
+  import {createScene, createLights, createGround, createRenderer, createCamera, createControls, loadGLTFModel, resizeHandler, createRaycaster} from "$lib/utility/threeFunctions"
+  import { handleComponentClick } from "$lib/utility/componentManager";
+  import { onMouseClick } from '$lib/utility/mouseEvents.js';
   import Logo from "$lib/components/Logo.svelte";
   import ButtonMode from "$lib/components/ButtonMode.svelte";
-  import { handleComponentClick } from "../lib/utility/componentManager";
-  import { onMouseClick } from '$lib/utility/mouseEvents.js';
-
-  import { appliedOptions } from "$lib/stores/store";
   import ColorOption from "$lib/components/ColorOption.svelte";
   import MaterialOption from "$lib/components/MaterialOption.svelte";
   import ComponentOption from "$lib/components/ComponentOption.svelte";
-  import IconButton from "$lib/shared/IconButton.svelte";
   import SvgIcon from "$lib/components/SvgIcon.svelte";
   import SaveModal from "$lib/components/SaveModal.svelte";
   import OrderModal from "$lib/components/OrderModal.svelte";
+  import {colorData} from '$lib/colorData.js'
+  import {materialInfo} from '$lib/customData.js';
 
   // stores
   const state = createState();
