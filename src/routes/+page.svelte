@@ -20,7 +20,7 @@
   import {colorData} from '$lib/colorData.js'
   import {materialInfo} from '$lib/customData.js';
 
-  // stores
+  // store
   const state = createState();
 
   let isMenuClicked = false;
@@ -34,16 +34,10 @@
     selectedComponent = e.detail.item;
   }
   
-  // 전역 변수 생성
   let model;
-
   let componentsList = [];
   let selectedComponent = null;
-
-  // threeFunctions modules
   let scene, renderer, camera, controls, raycaster;
-
-  // darkMode
   let ground;
   let isLightMode;
 
@@ -67,7 +61,6 @@ if (typeof window !== "undefined") {
     location.reload();
   }
   
-  // screenshot function
   let screenshot = "";
   let  isSaveBtnClicked = false;
   
@@ -80,32 +73,24 @@ if (typeof window !== "undefined") {
   }
 
   onMount(()=>{
-    //scene
     scene = createScene(isLightMode?'white':'black');
 
-    // lights
     createLights(scene);
 
-    // shadow ground
     ground = createGround(scene, isLightMode? "rgb(246, 246, 246)":0x222222);
 
-    //renderer
     const canvasElement = document.querySelector("#canvas");
     renderer=createRenderer(canvasElement);
 
-    //camera
     camera = createCamera();
 
-    //controls
     controls = createControls(camera, renderer.domElement);
 
-    // window resizing
     resizeHandler(camera, renderer);
 
     function render(){
       renderer.render(scene, camera)
     }
-  
   
     function animate(){
       requestAnimationFrame(animate);
@@ -113,20 +98,19 @@ if (typeof window !== "undefined") {
       render();
     }
   
-    // raycaster
     raycaster = createRaycaster();
 
-  const handleMouseClick = (event) => {
-    const clickedMesh = onMouseClick(event, raycaster, camera, model);
-    
-    if (clickedMesh) {
-      state.update((state) => {
-        state.clickedMesh = clickedMesh;
-        return state;
-      });
-    } else {
-      console.log("올바른 영역이 클릭되지 않았습니다.");
-    }
+    const handleMouseClick = (event) => {
+      const clickedMesh = onMouseClick(event, raycaster, camera, model);
+      
+      if (clickedMesh) {
+        state.update((state) => {
+          state.clickedMesh = clickedMesh;
+          return state;
+        });
+      } else {
+        console.log("올바른 영역이 클릭되지 않았습니다.");
+      }
 };
   
   // 개별 매시 탐지
@@ -136,14 +120,12 @@ if (typeof window !== "undefined") {
   loadGLTFModel("/models/gltf/Loafers.glb", function(gltf){
     model = gltf.scene;
     scene.add(model)
-    // console.log(gltf);
     model.scale.set(7,7,7)
     model.rotation.x = 0.45;
     model.rotation.y = 0.3;
     model.rotation.z = -0.15;
     model.position.x = -1;
     model.position.y = 0.4;
-
 
     // mesh name rendering 
     model.traverse((node)=>{
@@ -182,7 +164,6 @@ if (typeof window !== "undefined") {
     <Logo {isLightMode}/>
     <ButtonMode on:themeChange={handleThemeChange} class="inline-block dark:hover:text-white hover:text-gray-900"/>
     <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white {isLightMode?' text-[#2C2E31]': ' text-white bg-opacity-20 backdrop-blur'}    overflow-visible">
-      
       <nav class="h-24 p-8  font-bold text-lg text-center">
         <SvgIcon svgType={!isMenuClicked?'menu':'close'} {isLightMode} {isMenuClicked} on:menuToggle={handleMenuToggle}/>
         {#if $state.clickedMesh}
@@ -212,7 +193,5 @@ if (typeof window !== "undefined") {
       </div>
         <Button variant="primary" on:click={handlePurchaseBtn} {isLightMode}>구매하기</Button>
       </div> 
-    
     </div>
   </main>
-  

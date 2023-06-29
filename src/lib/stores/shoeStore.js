@@ -74,7 +74,6 @@ export const createState = () => {
         meshOptions = { ...meshOptions, material: material.name };
         get(appliedOptions)[get(state).clickedMesh.userData.name] = meshOptions;
 
-        // Save the applied material in appliedOptions map
         appliedOptions.update((optionsMap) => {
           optionsMap.set(get(state).clickedMesh.userData.name, meshOptions);
           return optionsMap;
