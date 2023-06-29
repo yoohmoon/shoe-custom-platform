@@ -150,6 +150,7 @@ if (typeof window !== "undefined") {
 
     setTimeout(()=>{selectedColorItem=null;},1700)
   }
+  let showMenu = false;
   
   </script>
   
@@ -163,7 +164,8 @@ if (typeof window !== "undefined") {
     <canvas id="canvas" style="relative"></canvas>
     <Logo {isLightMode}/>
     <ButtonMode on:themeChange={handleThemeChange} class="inline-block dark:hover:text-white hover:text-gray-900"/>
-    <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white {isLightMode?' text-[#2C2E31]': ' text-white bg-opacity-20 backdrop-blur'}    overflow-visible">
+  <div class="block lg:hidden fixed top-0 right-1 text-white" on:click={() => showMenu = !showMenu}>show</div>
+    <div class="flex flex-col fixed top-0 right-0 w-[450px] h-screen bg-white {isLightMode?' text-[#2C2E31]': ' text-white bg-opacity-20 backdrop-blur'}    overflow-visible lg:block" class:hidden={!showMenu} class:sm:block={showMenu}>
       <nav class="h-24 p-8  font-bold text-lg text-center">
         <SvgIcon svgType={!isMenuClicked?'menu':'close'} {isLightMode} {isMenuClicked} on:menuToggle={handleMenuToggle}/>
         {#if $state.clickedMesh}
