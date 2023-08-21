@@ -34,7 +34,7 @@
 on:click={toggleTheme} 
 aria-label="Dark mode" 
 type="button" {...$$restProps} 
-class="{twMerge(btnClass, $$props.class)} fixed bottom-6 left-5"
+class="{twMerge(btnClass, $$props.class)} fixed bottom-6 right-5"
 >
   <svelte:component this={Icon} className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" />
 </button>

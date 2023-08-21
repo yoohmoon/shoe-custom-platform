@@ -11,6 +11,8 @@
   {:else if iconType==='reset'}
     <FaUndo class="-scale-100 w-4 h-4" />
     <span>다시하기</span>
+  {:else if iconType==='reset-responsive'}
+    <FaUndo class="-scale-100 w-4 h-4" />
   {/if}
  
 </div>
