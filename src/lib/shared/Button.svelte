@@ -14,7 +14,7 @@
       ? 'w-40 bg-transparent border-2 border-black hover:bg-black hover:bg-opacity-10' 
       : 'w-40 bg-transparent border-2 border-white hover:bg-black hover:bg-opacity-20',
       'inverse-responsive': isLightMode 
-      ? 'moLandscape:block moLandscape:w-60 moLandscape:mb-1.5 tablet:w-40 desktop:w-40 tablet:inline-block desktop:inline-block bg-transparent border-2 border-black hover:bg-black hover:bg-opacity-10' 
+      ? 'moLandscape:block moLandscape:w-60 moLandscape:mb-1.5 tablet:w-40 desktop:w-40 tablet:inline-block desktop:inline-block bg-white border-2 border-[#2C2E31] hover:bg-black hover:bg-opacity-10' 
       : 'moLandscape:block moLandscape:w-60 moLandscape:mb-1.5 tablet:w-40 desktop:w-40 tablet:inline-block desktop:inline-block bg-transparent border-2 border-white hover:bg-black hover:bg-opacity-20',
     'inverse-lg': isLightMode 
       ? 'block mb-3 w-80 bg-transparent border-2 border-white hover:bg-white hover:bg-opacity-20' 

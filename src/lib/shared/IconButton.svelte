@@ -12,7 +12,7 @@
     <FaUndo class="-scale-100 w-4 h-4" />
     <span>다시하기</span>
   {:else if iconType==='reset-responsive'}
-    <FaUndo class="-scale-100 w-4 h-4" />
+    <FaUndo class="-scale-100 w-4 h-4 text-[#2C2E31]" />
   {/if}
  
 </div>
