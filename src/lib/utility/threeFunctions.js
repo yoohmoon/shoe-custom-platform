@@ -1,6 +1,7 @@
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { isMobile } from '../stores/responsiveStore';
 
 // scene
 export const createScene = (color) => {
@@ -99,13 +100,28 @@ export const loadGLTFModel = (modelPath, onLoad) => {
   loader.load(modelPath, onLoad);
 };
 
+// 반응형 너비 체크
+const checkWindowSize = () => {
+  if (window.innerWidth <= 768) {
+    //576px
+    isMobile.set(true);
+  } else {
+    isMobile.set(false);
+  }
+};
+
 export const resizeHandler = (camera, renderer) => {
-  window.addEventListener("resize", onWindowResize, false);
+  checkWindowSize();
+  window.addEventListener('resize', onWindowResize, false);
 
   function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    renderer.setSize(width, height);
   }
 };
 

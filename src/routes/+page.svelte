@@ -4,6 +4,7 @@
   import {createState} from "$lib/stores/shoeStore";
   import {showModal, toggleModal} from "$lib/stores/modalStore";
   import { appliedOptions } from "$lib/stores/store";
+  import { isMobile } from '../lib/stores/responsiveStore';
   import Button from "$lib/shared/Button.svelte";
   import IconButton from "$lib/shared/IconButton.svelte";
   import {createScene, createLights, createGround, createRenderer, createCamera, createControls, loadGLTFModel, resizeHandler, createRaycaster} from "$lib/utility/threeFunctions"
@@ -27,6 +28,7 @@
   const state = createState();
 
   let isMenuClicked = false;
+
 
   const handleMenuToggle = (e) =>{
     isMenuClicked = e.detail.isMenuClicked
@@ -89,7 +91,7 @@ if (typeof window !== "undefined") {
 
     controls = createControls(camera, renderer.domElement);
 
-    resizeHandler(camera, renderer);
+    resizeHandler(camera, renderer, model, $isMobile);
 
     function render(){
       renderer.render(scene, camera)
@@ -123,12 +125,17 @@ if (typeof window !== "undefined") {
   loadGLTFModel("/models/gltf/Loafers.glb", function(gltf){
     model = gltf.scene;
     scene.add(model)
-    model.scale.set(7,7,7)
     model.rotation.x = 0.45;
     model.rotation.y = 0.1;
     model.rotation.z = -0.15;
     model.position.x = 0.3;
     model.position.y = -0.4;
+
+    if($isMobile){
+      model.scale.set(6,6,6)
+    } else{
+      model.scale.set(7,7,7)
+    }
 
     // mesh name rendering 
     model.traverse((node)=>{
